@@ -187,23 +187,17 @@ public function checkTailCollision(){
 
             if(snake!=othersnake) //if we aren't checking a snake against itself
             {
-                      if(   //head/head intersection
-                          snake.headPosition.x == othersnake.headPosition.x
-                          &&snake.headPosition.y == othersnake.headPosition.y
-                        )
+                      if(isColliding(snake.headPosition,othersnake.headPosition)) //head/head test
 
                         {
                           snake.kill();
                           removeSnake(snake);
                         }
 
-                        for(tail in othersnake.tailList)
+                        for(othertail in othersnake.tailList)
                         {
 
-                          if(   //head/enemy tail intersection
-                              snake.headPosition.x == tail.x
-                            &&snake.headPosition.y == tail.y
-                            )
+                          if(isColliding(snake.headPosition,othertail)) //head/enemy tail collision
 
                             {
                               snake.kill();
@@ -219,13 +213,10 @@ public function checkTailCollision(){
 
       }
 
-      for(tail in snake.tailList)
+      for(owntail in snake.tailList)
       {
 
-        if(   //head/own tail intersection
-            snake.headPosition.x == tail.x
-          &&snake.headPosition.y == tail.y
-          )
+        if(isColliding(snake.headPosition,owntail)) //head/own tail collision
 
           {
             snake.kill();
@@ -241,10 +232,7 @@ public function checkTailCollision(){
 public function checkAppleCollision(){
   for (snake in listOfSnakes)
   {
-        if(
-               snake.headPosition.x == apple.x
-            && snake.headPosition.y == apple.y
-          )
+        if(isColliding(snake.headPosition,apple))
           {
             snake.grow();
             makeNewApple();
@@ -267,20 +255,14 @@ while(!foundPosition)
   foundPosition=true;
   for (snake in listOfSnakes)
   {
-        if(
-               snake.headPosition.x == appleTestPosition.x
-            && snake.headPosition.y == appleTestPosition.y
-          )
+        if(isColliding(snake.headPosition,appleTestPosition))
           {
             foundPosition=false;
             break;
           }
           for(tail in snake.tailList)
           {
-            if(
-                   tail.x == appleTestPosition.x
-                && tail.y == appleTestPosition.y
-              )
+            if(isColliding(tail,appleTestPosition))
               {
                 foundPosition=false;
                 break;
@@ -303,11 +285,11 @@ public function resetGameState(){
 
   var startoffset=0;
 
-  for (i in 0...listOfPlayers.length)
+  for (playerID in 0...listOfPlayers.length)
   {
-    listOfPlayers[i].resetInputState();
-    var playerStartPosition = {x:0, y:0+startoffset}; //p1 start pos
-    listOfSnakes.push(new Snake(playerStartPosition,i)); //create a snake for each player
+    listOfPlayers[playerID].resetInputState(); //reset the input state to default
+    var playerStartPosition = {x:0, y:0+startoffset}; //intitialize start position
+    listOfSnakes.push(new Snake(playerStartPosition,playerID)); //create a snake for each player
     startoffset += GameConstants.snakeSize*3; //move start position for next player
   }
 }
@@ -352,6 +334,19 @@ public function deleteDeadSnakes(){
     }
 
 
+
+  }
+
+  public static function isColliding(p1:Vector2D , p2:Vector2D):Bool{
+
+    if(
+        p1.x == p2.x
+      &&p1.y == p2.y
+      )
+    {
+         return true;
+    }
+    else return false;
 
   }
 
